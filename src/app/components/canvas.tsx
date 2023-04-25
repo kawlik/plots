@@ -58,30 +58,43 @@ export function Canvas(props: { network: Network }) {
 					id: "boundry",
 					beforeDraw(chart) {
 						const lenght = chart.width;
-						const offset = 5;
+						const offset = 1;
+
+						const imageData = chart.ctx.createImageData(lenght, lenght);
 
 						for (let x = 0; x < lenght; x += offset) {
 							for (let y = 0; y < lenght; y += offset) {
 								const _x = x / lenght;
 								const _y = y / lenght;
 
-								if (classify(props.network, _x, 1 - _y) === 1) {
-						            chart.ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
-									chart.ctx.fillRect(x, y, offset, offset);
-								} else {
-                                    chart.ctx.fillStyle = "rgba(0, 0, 255, 0.5)";
-									chart.ctx.fillRect(x, y, offset, offset);
-                                }
+								const index = 4 * (lenght * x + y);
+								const color = classify(props.network, _x, 1 - _y);
+
+								imageData.data[index + 0] = color === 1 ? 255 : 0;
+								imageData.data[index + 1] = 0;
+								imageData.data[index + 2] = color === 0 ? 255 : 0;
+								imageData.data[index + 3] = 99;
 							}
 						}
+
+						const texture = new ImageData(imageData.data, lenght, lenght);
+
+						chart.ctx.putImageData(texture, 0, 0);
 					},
 				},
 			],
 		});
 
+		chart.canvas.parentElement!.style.height = "256";
+		chart.canvas.parentElement!.style.width = "256";
+
 		window.addEventListener("updateLayer", () => chart.update());
 	});
 
 	// component layout
-	return <canvas id="chart" class="w-min h-min" />;
+	return (
+		<div>
+			<canvas id="chart" />
+		</div>
+	);
 }

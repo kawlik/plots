@@ -5,7 +5,7 @@ import { Canvas } from "./components/canvas";
 
 export function View() {
 	// component logic
-	const network = new Network([2, 3, 2]);
+	const network = new Network([2, 3, 3, 2]);
 
 	// component layout
 	return (
